@@ -4,8 +4,7 @@
 </head>
 <body>
 	<textarea id="box" rows="30">
-
-	</textarea>
+</textarea>
 	<button onclick="parse()">Parse</button>
 </body>
 <script type="text/javascript">
@@ -32,18 +31,35 @@ function parse(){
 	}
 
 	numClasses = data.length/4;
+	scheduleJSON = {
+		"schedule"	: []
+	}
 
 	//for each scheduled class
 	for (i=0;i<numClasses;i++){
 
 		//break into an object
-		tempObject = {
+		classObject = {
 			"class" : data[4*i], 
 			"type" 	: data[4*i+1],
 			"time" 	: data[4*i+2],
 			"room" 	: data[4*i+3]
 		};
+		
+		//break the object down if there is multiple time slots
+		//if single time slot
+		if (classObject.time.match(/^..\s/g)){
+			scheduleJSON.schedule.push(classObject);
+		}
+		else if (classObject.time.match(/^....\s/g)){
+			alert(classObject.time + "breeak down");
+		}
+		else{
+			alert("error. The time slots do not seem to be in a supported format.");
+			return -2;
+		}
 
+		document.getElementById('box').value = scheduleJSON.schedule;
 
 	}
 
