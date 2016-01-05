@@ -47,22 +47,35 @@ function parse(){
 		};
 		
 		//break the object down if there is multiple time slots
+		
 		//if single time slot
 		if (classObject.time.match(/^..\s/g)){
 			scheduleJSON.schedule.push(classObject);
 		}
 		else if (classObject.time.match(/^....\s/g)){
-			alert(classObject.time + "breeak down");
+			ending = classObject.time.substring(4);
+			day1 = classObject.time.substring(0,2) + ending;
+			tempObject = {
+				"class" : classObject.class, 
+				"type" 	: classObject.type,
+				"time" 	: day1,
+				"room" 	: classObject.room
+			};
+			scheduleJSON.schedule.push(tempObject);
+			day2 = classObject.time.substring(2,4) + ending;
+			tempObject = {
+				"class" : classObject.class, 
+				"type" 	: classObject.type,
+				"time" 	: day2,
+				"room" 	: classObject.room
+			};
+			scheduleJSON.schedule.push(tempObject);
 		}
 		else{
 			alert("error. The time slots do not seem to be in a supported format.");
 			return -2;
 		}
-
-		document.getElementById('box').value = scheduleJSON.schedule;
-
 	}
-
 }
 </script>
 </html>
