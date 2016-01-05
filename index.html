@@ -3,15 +3,50 @@
 	<title>Concordia Schedule Viewer</title>
 </head>
 <body>
-	<textarea id="box" rows="30"></textarea>
+	<textarea id="box" rows="30">
+
+	</textarea>
 	<button onclick="parse()">Parse</button>
 </body>
 <script type="text/javascript">
 function parse(){
 	box = document.getElementById('box').value;
+	//remove the icon placeholder text
 	box = box.replace(/Academic Calendar Deadlines\n/g,"");
+	//remove white space from the beginning
+	while(box.match(/^\n/g)){
+		box = box.replace(/^\n/g,"");
+	}
+	//remove white space from the end
+	while(box.match(/\n$/g)){
+		box = box.replace(/\n$/g,"");
+	}
 
-	document.getElementById('box').value = box;
+	//split into array
+	data = box.split("\n");
+
+	//check the size
+	if (data.length%4!=0){
+		alert("error. There are extra characters before/after the pasted info.");
+		return -1;
+	}
+
+	numClasses = data.length/4;
+
+	//for each scheduled class
+	for (i=0;i<numClasses;i++){
+
+		//break into an object
+		tempObject = {
+			"class" : data[4*i], 
+			"type" 	: data[4*i+1],
+			"time" 	: data[4*i+2],
+			"room" 	: data[4*i+3]
+		};
+
+
+	}
+
 }
 </script>
 </html>
