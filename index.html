@@ -1,0 +1,17 @@
+<html>
+<head>
+	<title>Concordia Schedule Viewer</title>
+</head>
+<body>
+	<textarea id="box" rows="30"></textarea>
+	<button onclick="parse()">Parse</button>
+</body>
+<script type="text/javascript">
+function parse(){
+	box = document.getElementById('box').value;
+	box = box.replace(/Academic Calendar Deadlines\n/g,"");
+
+	document.getElementById('box').value = box;
+}
+</script>
+</html>
