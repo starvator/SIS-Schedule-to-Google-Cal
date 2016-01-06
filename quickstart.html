@@ -115,17 +115,44 @@
           sTime=sTime.substring(0,5);
 
           //end time hack together
+          eTime = dateInfo[3];
+          if (eTime.match(/AM$/)){
+            if (eTime.length==6){
+              eTime="0"+eTime;
+            }
+            else if (eTime.length==7){
 
- console.log(sTime);
+            }
+            else{
+              return -4;
+            }
+          }
+          else if (eTime.match(/PM$/)){
+            splitTime=eTime.split(":");
+            pmTime=parseInt(splitTime[0])+12;
+            if (eTime.length==6){
+              eTime= pmTime + eTime.substring(1);
+            }
+            else if (eTime.length==7){
+              eTime= pmTime + eTime.substring(2);
+            }
+          }
+          eTime=eTime.substring(0,5);
+
+
+
+
+
+ console.log(eTime);
         var event = {
           'summary': entry.class,
           'description': entry.type + ' ' + entry.room,
           'start': {
-            'dateTime': date +'T09:00:00',
+            'dateTime': date +'T'+sTime+':00',
             'timeZone': 'America/Montreal'
           },
           'end': {
-            'dateTime': date + 'T17:00:00',
+            'dateTime': date +'T'+eTime+':00',
             'timeZone': 'America/Montreal'
           },
           'recurrence': [
@@ -137,11 +164,11 @@
           'calendarId': 'primary',
           'resource': event
         });
-/*
+
         request.execute(function(resp) {
           var events = resp.items;
           appendPre('Upcoming events:');        
-        }); */
+        }); 
         });
       }
 
