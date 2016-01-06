@@ -67,6 +67,8 @@
       function insertCalendarEvents() {
         scheduleJSON.schedule.forEach(function(entry) {
         dateInfo=entry.time.split(" ");
+
+        //date hack together
         var date ="";
           switch(dateInfo[0]) {
             case "Mo":
@@ -87,7 +89,34 @@
             default:
               return -3;
           }
+          //start time hack together
+          sTime = dateInfo[1];
+          if (sTime.match(/AM$/)){
+            if (sTime.length==6){
+              sTime="0"+sTime;
+            }
+            else if (sTime.length==7){
 
+            }
+            else{
+              return -4;
+            }
+          }
+          else if (sTime.match(/PM$/)){
+            splitTime=sTime.split(":");
+            pmTime=parseInt(splitTime[0])+12;
+            if (sTime.length==6){
+              sTime= pmTime + sTime.substring(1);
+            }
+            else if (sTime.length==7){
+              sTime= pmTime + sTime.substring(2);
+            }
+          }
+          sTime=sTime.substring(0,5);
+
+          //end time hack together
+
+ console.log(sTime);
         var event = {
           'summary': entry.class,
           'description': entry.type + ' ' + entry.room,
@@ -249,12 +278,12 @@ H 431 SGW
 Academic Calendar Deadlines
 SOEN 390-S SA
 TUT (5061)
-Mo 6:15PM - 7:05PM
+Mo 6:15AM - 7:05PM
 Room:  TBA
 Academic Calendar Deadlines
 SOEN 390-SK-X
 LAB (5057)
-Tu 3:45PM - 6:25PM
+Tu 11:45PM - 6:25PM
 Room:  TBA
 </textarea>
     <div id="authorize-div" style="display: inline">
