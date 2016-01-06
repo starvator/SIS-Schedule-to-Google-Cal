@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="en-us">
   <head>
@@ -55,3 +56,286 @@
   
   </body>
 </html>
+=======
+<html>
+  <head>
+    <title>SIS -> Google Cal</title>
+    <script type="text/javascript">
+
+      var referenceMonday = "2016-01-04";//yyyy-mm-dd
+      var lastDayOfClasses = "20160414"; //yyyymmdd
+      var calID= "primary";
+      scheduleJSON = {
+        "schedule"  : []
+      }
+      // Your Client ID can be retrieved from your project in the Google
+      // Developer Console, https://console.developers.google.com
+      var CLIENT_ID = '62554439825-fiovh7ru5f2ffk4pntj3vq26uu57id1g.apps.googleusercontent.com';
+
+      var SCOPES = ["https://www.googleapis.com/auth/calendar"];
+
+      /**
+       * Check if current user has authorized this application.
+       */
+      function checkAuth() {
+        gapi.auth.authorize(
+          {
+            'client_id': CLIENT_ID,
+            'scope': SCOPES.join(' '),
+            'immediate': true
+          }, handleAuthResult);
+      }
+
+      /**
+       * Handle response from authorization server.
+       *
+       * @param {Object} authResult Authorization result.
+       */
+      function handleAuthResult(authResult) {
+        var authorizeDiv = document.getElementById('authorize-div');
+        if (authResult && !authResult.error) {
+          // Hide auth UI, then load client library.
+          authorizeDiv.style.display = 'none';
+          loadCalendarApi();
+        } else {
+          // Show auth UI, allowing the user to initiate authorization by
+          // clicking authorize button.
+          authorizeDiv.style.display = 'inline';
+        }
+      }
+
+      /**
+       * Initiate auth flow in response to user clicking authorize button.
+       *
+       * @param {Event} event Button click event.
+       */
+      function handleAuthClick(event) {
+        gapi.auth.authorize(
+          {client_id: CLIENT_ID, scope: SCOPES, immediate: false},
+          handleAuthResult);
+        return false;
+      }
+
+      /**
+       * Load Google Calendar client library. insert calendar events
+       * once client library is loaded.
+       */
+      function loadCalendarApi() {
+        gapi.client.load('calendar', 'v3', insertCalendarEvents);
+      }
+
+      function insertCalendarEvents() {
+        scheduleJSON.schedule.forEach(function(entry) {
+        dateInfo=entry.time.split(" ");
+
+        //date hack together
+        var date ="";
+          switch(dateInfo[0]) {
+            case "Mo":
+              date="2016-01-04";
+            break;
+            case "Tu":
+              date="2016-01-05";
+            break;
+            case "We":
+              date="2016-01-06";
+            break;
+            case "Th":
+              date="2016-01-07";
+            break;
+            case "Fr":
+              date="2016-01-08";
+            break;
+            default:
+              return -3;
+          }
+          //start time hack together
+          sTime = dateInfo[1];
+          if (sTime.match(/AM$/)){
+            if (sTime.length==6){
+              sTime="0"+sTime;
+            }
+            else if (sTime.length==7){
+
+            }
+            else{
+              return -4;
+            }
+          }
+          else if (sTime.match(/PM$/)){
+            splitTime=sTime.split(":");
+            if (splitTime[0]==12){
+
+            } else {
+              pmTime=parseInt(splitTime[0])+12;
+            }
+            if (sTime.length==6){
+              sTime= pmTime + sTime.substring(1);
+            }
+            else if (sTime.length==7){
+              sTime= pmTime + sTime.substring(2);
+            }
+          }
+          sTime=sTime.substring(0,5);
+
+          //end time hack together
+          eTime = dateInfo[3];
+          if (eTime.match(/AM$/)){
+            if (eTime.length==6){
+              eTime="0"+eTime;
+            }
+            else if (eTime.length==7){
+            }
+            else{
+              return -4;
+            }
+          }
+          else if (eTime.match(/PM$/)){
+            splitTime=eTime.split(":");
+            if (splitTime[0]==12){
+            } else {
+              pmTime=parseInt(splitTime[0])+12;
+            }
+            if (eTime.length==6){
+              eTime= pmTime + eTime.substring(1);
+            }
+            else if (eTime.length==7){
+              eTime= pmTime + eTime.substring(2);
+            }
+          }
+          eTime=eTime.substring(0,5);
+
+
+
+
+
+        var event = {
+          'summary': entry.class,
+          'description': entry.type + ' ' + entry.room,
+          'start': {
+            'dateTime': date +'T'+sTime+':00',
+            'timeZone': 'America/Montreal'
+          },
+          'end': {
+            'dateTime': date +'T'+eTime+':00',
+            'timeZone': 'America/Montreal'
+          },
+          'recurrence': [
+            'RRULE:FREQ=WEEKLY;UNTIL=' + lastDayOfClasses +'T240000Z'
+          ]
+        };
+
+        var request = gapi.client.calendar.events.insert({
+          'calendarId': calID,
+          'resource': event
+        });
+
+        request.execute(function(resp) {
+          var events = resp.items;
+          appendPre('Added '+entry.class);        
+        }); 
+        });
+      }
+
+      /**
+       * Append a pre element to the body containing the given message
+       * as its text node.
+       *
+       * @param {string} message Text to be placed in pre element.
+       */
+      function appendPre(message) {
+        var pre = document.getElementById('output');
+        var textContent = document.createTextNode(message + '\n');
+        pre.appendChild(textContent);
+      }
+
+function parse(){
+  if (document.getElementById('calId').value!=""){
+    calID=document.getElementById('calId').value;
+  }
+  box = document.getElementById('box').value;
+  //remove the icon placeholder text
+  box = box.replace(/Academic Calendar Deadlines\n/g,"");
+  //remove white space from the beginning
+  while(box.match(/^\n/g)){
+    box = box.replace(/^\n/g,"");
+  }
+  //remove white space from the end
+  while(box.match(/\n$/g)){
+    box = box.replace(/\n$/g,"");
+  }
+
+  //split into array
+  data = box.split("\n");
+
+  //check the size
+  if (data.length%4!=0){
+    alert("error. There are extra characters before/after the pasted info.");
+    return -1;
+  }
+
+  numClasses = data.length/4;
+
+  //for each scheduled class
+  for (i=0;i<numClasses;i++){
+
+    //break into an object
+    classObject = {
+      "class" : data[4*i], 
+      "type"  : data[4*i+1],
+      "time"  : data[4*i+2],
+      "room"  : data[4*i+3]
+    };
+    
+    //break the object down if there is multiple time slots
+    
+    //if single time slot
+    if (classObject.time.match(/^..\s/g)){
+      scheduleJSON.schedule.push(classObject);
+    }
+    else if (classObject.time.match(/^....\s/g)){
+      ending = classObject.time.substring(4);
+      day1 = classObject.time.substring(0,2) + ending;
+      tempObject = {
+        "class" : classObject.class, 
+        "type"  : classObject.type,
+        "time"  : day1,
+        "room"  : classObject.room
+      };
+      scheduleJSON.schedule.push(tempObject);
+      day2 = classObject.time.substring(2,4) + ending;
+      tempObject = {
+        "class" : classObject.class, 
+        "type"  : classObject.type,
+        "time"  : day2,
+        "room"  : classObject.room
+      };
+      scheduleJSON.schedule.push(tempObject);
+    }
+    else{
+      alert("error. The time slots do not seem to be in a supported format.");
+      return -2;
+    }
+  }
+
+  handleAuthClick(event);
+}
+    </script>
+    <script src="https://apis.google.com/js/client.js">
+    </script>
+  </head>
+  <body>
+    <h1>SIS -> Google Cal</h1>
+    Copy and paste the text schedule from the homepage of the <a href="https://campus.concordia.ca/psp/pscsprd/EMPLOYEE/HRMS/c/SA_LEARNER_SERVICES.SSS_STUDENT_CENTER.GBL">SIS student center</a> below, as seen here <img src="img/select.png" width="200px"><br> <textarea id="box" cols="60" rows="10"></textarea><br>
+    Advanced users: Calendar ID:<input type="text" id="calId"></input> <a href="https://support.appmachine.com/hc/en-us/articles/203645966-Find-your-Google-Calendar-ID-for-the-Events-block">Click here</a> for a how to find a cal id. leave blank for default<br>
+    <div id="authorize-div" style="display: inline"><br>
+      <span>Build calendar and import it into google calendar</span>
+      <!--Button for the user to click to initiate auth sequence -->
+      <button id="authorize-button" onclick="parse()">
+        Authorize & Build
+      </button>
+    </div>
+    <pre id="output"></pre>
+  </body>
+</html>
+>>>>>>> master
