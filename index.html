@@ -106,7 +106,7 @@
           else if (sTime.match(/PM$/)){
             splitTime=sTime.split(":");
             if (splitTime[0]==12){
-
+              pmTime=splitTime[0];
             } else {
               pmTime=parseInt(splitTime[0])+12;
             }
@@ -134,6 +134,7 @@
           else if (eTime.match(/PM$/)){
             splitTime=eTime.split(":");
             if (splitTime[0]==12){
+              pmTime=splitTime[0];
             } else {
               pmTime=parseInt(splitTime[0])+12;
             }
