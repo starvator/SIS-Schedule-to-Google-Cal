@@ -4,7 +4,7 @@
 
       var referenceMonday = "2016-01-04";//yyyy-mm-dd
       var lastDayOfClasses = "20160414"; //yyyymmdd
-
+      var calID= "default";
       scheduleJSON = {
         "schedule"  : []
       }
@@ -166,7 +166,7 @@
         };
 
         var request = gapi.client.calendar.events.insert({
-          'calendarId': 'primary',
+          'calendarId': calID,
           'resource': event
         });
 
@@ -190,6 +190,9 @@
       }
 
 function parse(){
+  if (document.getElementById('calId').value!=""){
+    calID=document.getElementById('calId').value;
+  }
   box = document.getElementById('box').value;
   //remove the icon placeholder text
   box = box.replace(/Academic Calendar Deadlines\n/g,"");
@@ -262,8 +265,9 @@ function parse(){
     </script>
   </head>
   <body>
-    <textarea id="box" rows="30"></textarea>
-    <div id="authorize-div" style="display: inline">
+    Copy and paste the text schedule from the homepage of the <a href="https://campus.concordia.ca/psp/pscsprd/EMPLOYEE/HRMS/c/SA_LEARNER_SERVICES.SSS_STUDENT_CENTER.GBL">SIS student center</a> below, as seen here <img src="img/select.png" width="200px"><br> <textarea id="box" cols="60" rows="10"></textarea><br>
+    Advanced users: Calendar ID:<input type="text" id="calId"></input> <a href="https://support.appmachine.com/hc/en-us/articles/203645966-Find-your-Google-Calendar-ID-for-the-Events-block">Click here</a> for a how to find a cal id. leave blank for default<br>
+    <div id="authorize-div" style="display: inline"><br>
       <span>Build calendar and import it into google calendar</span>
       <!--Button for the user to click to initiate auth sequence -->
       <button id="authorize-button" onclick="parse()">
