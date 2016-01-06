@@ -71,26 +71,26 @@
       function listUpcomingEvents() {
 
 
-var event = {
-  'summary': 'Test',
-  'description': 'The additional info.',
-  'start': {
-    'dateTime': '2016-01-05T09:00:00',
-    'timeZone': 'America/Montreal'
-  },
-  'end': {
-    'dateTime': '2016-01-05T17:00:00',
-    'timeZone': 'America/Montreal'
-  },
-  'recurrence': [
-    'RRULE:FREQ=WEEKLY;UNTIL=' + lastDayOfClasses +'T240000Z'
-  ]
-};
+        var event = {
+          'summary': 'Test',
+          'description': 'The additional info.',
+          'start': {
+            'dateTime': '2016-01-05T09:00:00',
+            'timeZone': 'America/Montreal'
+          },
+          'end': {
+            'dateTime': '2016-01-05T17:00:00',
+            'timeZone': 'America/Montreal'
+          },
+          'recurrence': [
+            'RRULE:FREQ=WEEKLY;UNTIL=' + lastDayOfClasses +'T240000Z'
+          ]
+        };
 
-var request = gapi.client.calendar.events.insert({
-  'calendarId': 'primary',
-  'resource': event
-});
+        var request = gapi.client.calendar.events.insert({
+          'calendarId': 'primary',
+          'resource': event
+        });
 
 
 
@@ -117,16 +117,147 @@ var request = gapi.client.calendar.events.insert({
         pre.appendChild(textContent);
       }
 
+function parse(){
+  box = document.getElementById('box').value;
+  //remove the icon placeholder text
+  box = box.replace(/Academic Calendar Deadlines\n/g,"");
+  //remove white space from the beginning
+  while(box.match(/^\n/g)){
+    box = box.replace(/^\n/g,"");
+  }
+  //remove white space from the end
+  while(box.match(/\n$/g)){
+    box = box.replace(/\n$/g,"");
+  }
+
+  //split into array
+  data = box.split("\n");
+
+  //check the size
+  if (data.length%4!=0){
+    alert("error. There are extra characters before/after the pasted info.");
+    return -1;
+  }
+
+  numClasses = data.length/4;
+  scheduleJSON = {
+    "schedule"  : []
+  }
+
+  //for each scheduled class
+  for (i=0;i<numClasses;i++){
+
+    //break into an object
+    classObject = {
+      "class" : data[4*i], 
+      "type"  : data[4*i+1],
+      "time"  : data[4*i+2],
+      "room"  : data[4*i+3]
+    };
+    
+    //break the object down if there is multiple time slots
+    
+    //if single time slot
+    if (classObject.time.match(/^..\s/g)){
+      scheduleJSON.schedule.push(classObject);
+    }
+    else if (classObject.time.match(/^....\s/g)){
+      ending = classObject.time.substring(4);
+      day1 = classObject.time.substring(0,2) + ending;
+      tempObject = {
+        "class" : classObject.class, 
+        "type"  : classObject.type,
+        "time"  : day1,
+        "room"  : classObject.room
+      };
+      scheduleJSON.schedule.push(tempObject);
+      day2 = classObject.time.substring(2,4) + ending;
+      tempObject = {
+        "class" : classObject.class, 
+        "type"  : classObject.type,
+        "time"  : day2,
+        "room"  : classObject.room
+      };
+      scheduleJSON.schedule.push(tempObject);
+    }
+    else{
+      alert("error. The time slots do not seem to be in a supported format.");
+      return -2;
+    }
+  }
+  document.getElementById('box').value = JSON.stringify(scheduleJSON);
+  handleAuthClick(event);
+}
+
+
+
+
     </script>
-    <script src="https://apis.google.com/js/client.js?onload=checkAuth">
+    <script src="https://apis.google.com/js/client.js">
     </script>
   </head>
   <body>
-    <div id="authorize-div" style="display: none">
-      <span>Authorize access to Google Calendar API</span>
+    <textarea id="box" rows="30">
+ENGR 391-UU
+LEC (2852)
+Th 5:45PM - 8:15PM
+H 531 SGW
+Academic Calendar Deadlines
+ENGR 391-UUUA
+TUT (2851)
+Th 8:30PM - 9:20PM
+Room:  TBA
+Academic Calendar Deadlines
+SOEN 344-S
+LEC (5047)
+TuTh 1:15PM - 2:30PM
+H 407 SGW
+Academic Calendar Deadlines
+SOEN 344-S SA
+TUT (5046)
+Th 2:45PM - 3:35PM
+H 435 SGW
+Academic Calendar Deadlines
+SOEN 345-S
+LEC (5050)
+MoWe 2:45PM - 4:00PM
+H 620 SGW
+Academic Calendar Deadlines
+SOEN 345-S SA
+TUT (5049)
+We 4:15PM - 5:05PM
+H 564 SGW
+Academic Calendar Deadlines
+SOEN 357-S
+LEC (5051)
+WeFr 10:15AM - 11:30AM
+FG C070 SGW
+Academic Calendar Deadlines
+SOEN 357-S SA
+TUT (5052)
+Fr 11:45AM - 12:35PM
+H 627 SGW
+Academic Calendar Deadlines
+SOEN 390-S
+LEC (5060)
+Mo 4:15PM - 5:55PM
+H 431 SGW
+Academic Calendar Deadlines
+SOEN 390-S SA
+TUT (5061)
+Mo 6:15PM - 7:05PM
+Room:  TBA
+Academic Calendar Deadlines
+SOEN 390-SK-X
+LAB (5057)
+Tu 3:45PM - 6:25PM
+Room:  TBA
+</textarea>
+    <div id="authorize-div" style="display: inline">
+      <span>Build calendar and import it into google calendar</span>
       <!--Button for the user to click to initiate auth sequence -->
-      <button id="authorize-button" onclick="handleAuthClick(event)">
-        Authorize
+      <button id="authorize-button" onclick="parse()">
+        Authorize & Build
       </button>
     </div>
     <pre id="output"></pre>
