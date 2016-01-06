@@ -5,8 +5,9 @@
       var referenceMonday = "2016-01-04";//yyyy-mm-dd
       var lastDayOfClasses = "20160414"; //yyyymmdd
 
-
-
+      scheduleJSON = {
+        "schedule"  : []
+      }
       // Your Client ID can be retrieved from your project in the Google
       // Developer Console, https://console.developers.google.com
       var CLIENT_ID = '62554439825-fiovh7ru5f2ffk4pntj3vq26uu57id1g.apps.googleusercontent.com';
@@ -56,30 +57,46 @@
       }
 
       /**
-       * Load Google Calendar client library. List upcoming events
+       * Load Google Calendar client library. insert calendar events
        * once client library is loaded.
        */
       function loadCalendarApi() {
-        gapi.client.load('calendar', 'v3', listUpcomingEvents);
+        gapi.client.load('calendar', 'v3', insertCalendarEvents);
       }
 
-      /**
-       * Print the summary and start datetime/date of the next ten events in
-       * the authorized user's calendar. If no events are found an
-       * appropriate message is printed.
-       */
-      function listUpcomingEvents() {
-
+      function insertCalendarEvents() {
+        scheduleJSON.schedule.forEach(function(entry) {
+        dateInfo=entry.time.split(" ");
+        var date ="";
+          switch(dateInfo[0]) {
+            case "Mo":
+              date="2016-01-04";
+            break;
+            case "Tu":
+              date="2016-01-05";
+            break;
+            case "We":
+              date="2016-01-06";
+            break;
+            case "Th":
+              date="2016-01-07";
+            break;
+            case "Fr":
+              date="2016-01-08";
+            break;
+            default:
+              return -3;
+          }
 
         var event = {
-          'summary': 'Test',
-          'description': 'The additional info.',
+          'summary': entry.class,
+          'description': entry.type + ' ' + entry.room,
           'start': {
-            'dateTime': '2016-01-05T09:00:00',
+            'dateTime': date +'T09:00:00',
             'timeZone': 'America/Montreal'
           },
           'end': {
-            'dateTime': '2016-01-05T17:00:00',
+            'dateTime': date + 'T17:00:00',
             'timeZone': 'America/Montreal'
           },
           'recurrence': [
@@ -91,17 +108,11 @@
           'calendarId': 'primary',
           'resource': event
         });
-
-
-
-
-
-
+/*
         request.execute(function(resp) {
           var events = resp.items;
-          appendPre('Upcoming events:');
-
-          
+          appendPre('Upcoming events:');        
+        }); */
         });
       }
 
@@ -140,9 +151,6 @@ function parse(){
   }
 
   numClasses = data.length/4;
-  scheduleJSON = {
-    "schedule"  : []
-  }
 
   //for each scheduled class
   for (i=0;i<numClasses;i++){
@@ -188,10 +196,6 @@ function parse(){
   document.getElementById('box').value = JSON.stringify(scheduleJSON);
   handleAuthClick(event);
 }
-
-
-
-
     </script>
     <script src="https://apis.google.com/js/client.js">
     </script>
