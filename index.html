@@ -3,8 +3,8 @@
     <title>SIS -> Google Cal</title>
     <script type="text/javascript">
 
-      var referenceMonday = "2016-01-04";//yyyy-mm-dd
-      var lastDayOfClasses = "20160414"; //yyyymmdd
+      var referenceMonday = "2017-01-09";//yyyy-mm-dd
+      var lastDayOfClasses = "20170413"; //yyyymmdd
       var calID= "primary";
       scheduleJSON = {
         "schedule"  : []
@@ -73,19 +73,19 @@
         var date ="";
           switch(dateInfo[0]) {
             case "Mo":
-              date="2016-01-04";
+              date="2017-01-09";
             break;
             case "Tu":
-              date="2016-01-05";
+              date="2017-01-10";
             break;
             case "We":
-              date="2016-01-06";
+              date="2017-01-11";
             break;
             case "Th":
-              date="2016-01-07";
+              date="2017-01-12";
             break;
             case "Fr":
-              date="2016-01-08";
+              date="2017-01-13";
             break;
             default:
               return -3;
@@ -267,7 +267,7 @@ function parse(){
     </script>
   </head>
   <body>
-    <h1>SIS -> Google Cal; Winter 2016</h1>
+    <h1>SIS -> Google Cal; Winter 2017</h1>
     <h2>ALPHA VERSION: use at your own risk!</h2>
     Copy and paste the text schedule from the homepage of the <a href="https://campus.concordia.ca/psp/pscsprd/EMPLOYEE/HRMS/c/SA_LEARNER_SERVICES.SSS_STUDENT_CENTER.GBL" target="_blank">SIS student center</a> below, as seen here <img src="img/select.png" width="200px"><br> <textarea id="box" cols="60" rows="10"></textarea><br>
     Advanced users: Calendar ID:<input type="text" id="calId"></input> <a href="https://support.appmachine.com/hc/en-us/articles/203645966-Find-your-Google-Calendar-ID-for-the-Events-block" target="_blank">Click here</a> for a how to find a cal id. leave blank for default<br>
